@@ -22,7 +22,7 @@ public class InboxReader {
         try {
             Session session = Session.getDefaultInstance(props, null);
             Store store = session.getStore("imaps");
-            store.connect("imap.gmail.com", "jirka.sitina@gmail.com", "*****");
+            store.connect("imap.gmail.com", "jirka.sitina@gmail.com", "******");
 
             Folder inbox = store.getFolder("Inbox");
             inbox = store.getFolder("Notes");
@@ -43,11 +43,11 @@ public class InboxReader {
             message.setRecipient(Message.RecipientType.TO, to);
             message.setSubject("/Users/jirka/Documents/workspace/imap-file-sync/tmp.txt");
 
-            inbox.appendMessages(new Message[] { message });
-            inbox.open(Folder.READ_WRITE);
+            folder.appendMessages(new Message[] { message });
+            folder.open(Folder.READ_WRITE);
 
             // inbox.open(Folder.READ_ONLY);
-            Message messages[] = inbox.getMessages();
+            Message messages[] = folder.getMessages();
             for (Message m : messages) {
                 InternetAddress fromAddress = (InternetAddress) m.getFrom()[0];
                 System.out.println(fromAddress.getAddress());
