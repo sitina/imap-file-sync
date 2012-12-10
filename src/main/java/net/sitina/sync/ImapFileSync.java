@@ -3,9 +3,16 @@ package net.sitina.sync;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImapFileSync {
 
@@ -13,6 +20,12 @@ public class ImapFileSync {
 
         ImapProvider p = new ImapProvider();
         final List<ImapSyncFile> files = p.getFiles();
+
+        final Map<String, ImapSyncFile> filesMap = new HashMap<String, ImapSyncFile>();
+
+        for (ImapSyncFile f : files) {
+            filesMap.put(f.getName(), f);
+        }
 
         FileSystem fileSystem = FileSystems.getDefault();
         WatchService watcher = fileSystem.newWatchService();
@@ -49,6 +62,11 @@ public class ImapFileSync {
                     System.out.println("Delete: " + event.context().toString());
                 }
                 if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+
+                    if (filesMap.containsKey(event.context())) {
+                        // update the file on IMAP
+                    }
+
                     System.out.println("Modify: " + event.context().toString());
                 }
             }

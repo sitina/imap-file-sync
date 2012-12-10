@@ -35,4 +35,9 @@ public class ImapSyncFile extends File {
         return emailBody;
     }
 
+    public String getValue() {
+        // TODO: read value of the file we are speaking about
+        return null;
+    }
+
 }
