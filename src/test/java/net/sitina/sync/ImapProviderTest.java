@@ -5,9 +5,23 @@ package net.sitina.sync;
 
 import junit.framework.TestCase;
 
-/**
- *
- */
+import org.junit.Before;
+
 public class ImapProviderTest extends TestCase {
+
+    private ImapProvider provider;
+    private final String server = "server";
+    private final String userName = "user";
+    private final String password = "password";
+    private final String folder = "folder";
+
+    @Before
+    public void setup() {
+        provider = new ImapProvider(server, userName, password, folder);
+    }
+
+    public void testAAA() {
+
+    }
 
 }

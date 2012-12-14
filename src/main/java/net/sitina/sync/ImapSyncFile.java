@@ -1,11 +1,22 @@
 package net.sitina.sync;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImapSyncFile extends File {
 
+
     private static final long serialVersionUID = 3746874166888787764L;
+    private static final String LINE_SEPARATOR = "line.separator";
+    private static final Logger log = LoggerFactory.getLogger(ImapSyncFile.class);
 
     public ImapSyncFile(String pathname) {
         super(pathname);
@@ -36,8 +47,34 @@ public class ImapSyncFile extends File {
     }
 
     public String getValue() {
-        // TODO: read value of the file we are speaking about
-        return null;
+        StringBuilder result = new StringBuilder();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(this));
+
+            String line = null;
+            String ls = System.getProperty(LINE_SEPARATOR);
+
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+                result.append(ls);
+            }
+        } catch (IOException e) {
+            log.error("Problem reading contents of the file", e);
+        }
+        return result.toString();
+    }
+
+    public void setValue(String value) {
+        try {
+            if (!this.exists()) {
+                this.createNewFile();
+            }
+            BufferedWriter out = new BufferedWriter(new FileWriter(this));
+            out.write(value);
+            out.close();
+        } catch (IOException e) {
+            log.error("Problem writing value into the file", e);
+        }
     }
 
 }

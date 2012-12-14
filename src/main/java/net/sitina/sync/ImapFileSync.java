@@ -18,7 +18,13 @@ public class ImapFileSync {
 
     public static void main( String[] args ) throws Exception {
 
-        ImapProvider p = new ImapProvider();
+        String folder = "IMAP File Sync";
+        String password = "";
+        String username = "jirka.sitina@gmail.com";
+        String server = "imap.gmail.com";
+
+        ImapProvider p = new ImapProvider(server, username, password, folder);
+
         final List<ImapSyncFile> files = p.getFiles();
 
         final Map<String, ImapSyncFile> filesMap = new HashMap<String, ImapSyncFile>();
