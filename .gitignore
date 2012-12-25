@@ -1,3 +1,5 @@
+test.properties
+.idea/**
 .classpath
 .settings/**
 .project

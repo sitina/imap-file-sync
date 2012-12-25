@@ -17,9 +17,11 @@ public class ImapSyncFile extends File {
     private static final long serialVersionUID = 3746874166888787764L;
     private static final String LINE_SEPARATOR = "line.separator";
     private static final Logger log = LoggerFactory.getLogger(ImapSyncFile.class);
+    private final String subject;
 
-    public ImapSyncFile(String pathname) {
+    public ImapSyncFile(String pathname,  String subject) {
         super(pathname);
+        this.subject = subject;
     }
 
     private Date imapUpdateTime;
@@ -35,7 +37,7 @@ public class ImapSyncFile extends File {
     }
 
     public Date getFileSystemUpdateTime() {
-        return fileSystemUpdateTime;
+        return new Date(this.lastModified());
     }
 
     public void setEmailBody(String emailBody) {
@@ -75,6 +77,10 @@ public class ImapSyncFile extends File {
         } catch (IOException e) {
             log.error("Problem writing value into the file", e);
         }
+    }
+
+    public String getSubject() {
+        return subject;
     }
 
 }
