@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,11 @@ public class ImapFileSync {
         final List<ImapSyncFile> files = p.getFiles();
 
         final Map<String, ImapSyncFile> filesMap = new HashMap<String, ImapSyncFile>();
+
+        File storageFolderFile = new File(storageFolder);
+        if (!storageFolderFile.exists()) {
+            storageFolderFile.mkdirs();
+        }
 
         for (ImapSyncFile f : files) {
             filesMap.put(f.getName(), f);
@@ -73,36 +80,9 @@ public class ImapFileSync {
         Path myDir = fileSystem.getPath(storageFolder);
         myDir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,  StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 
-        WatchKey watckKey = watcher.take();
-
-        for (;;) {
-            List<WatchEvent<?>> events = watckKey.pollEvents();
-            for (WatchEvent event : events) {
-                log.debug("Event {} happeded, context = '{}'.", event.kind().toString(), event.context().toString());
-
-                if (!event.context().toString().startsWith(".")) {
-                    if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-                        ImapSyncFile file = new ImapSyncFile(storageFolder + event.context().toString(), event.context().toString());
-                        p.createMessage(file);
-                        log.debug("File {} stored in imap folder.", event.context().toString());
-                    }
-                    if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-                        if (filesMap.containsKey(event.context().toString())) {
-                            ImapSyncFile file = filesMap.get(event.context().toString());
-                            p.deleteMessage(file);
-                            log.debug("File {} deleted.", event.context().toString());
-                        }
-                    }
-                    if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-                        if (filesMap.containsKey(event.context().toString())) {
-                            ImapSyncFile file = filesMap.get(event.context().toString());
-                            p.updateMessage(file);
-                            log.debug("File {} updated.", event.context().toString());
-                        }
-                    }
-                }
-            }
-        }
+        FolderWatcher folderWatcher = new FolderWatcher(p, watcher, filesMap, storageFolder);
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.execute(folderWatcher);
 
             // read IMAP folder and look for files
             // check that are those files in sync (eg. look at the files, load their meta and copy newer version from/to server depending on the latest date); create missing files

@@ -24,9 +24,6 @@ public class InboxReader {
             Store store = session.getStore("imaps");
             store.connect("imap.gmail.com", "jirka.sitina@gmail.com", "urikkcnyjiearxml");
 
-            Folder inbox = store.getFolder("Inbox");
-            inbox = store.getFolder("Notes");
-
             Folder folder = store.getDefaultFolder().getFolder("IMAP File Sync");
             if (!folder.exists()) {
                 folder.create(Folder.HOLDS_MESSAGES);

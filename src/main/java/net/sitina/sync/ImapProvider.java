@@ -8,8 +8,8 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
-import com.sun.mail.imap.IMAPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,7 +178,22 @@ public class ImapProvider {
     private ImapSyncFile createImapSyncFile(Message msg) throws MessagingException, IOException {
         ImapSyncFile result = new ImapSyncFile(localFolder + msg.getSubject(), msg.getSubject());
         result.setImapUpdateTime(msg.getReceivedDate());
-        result.setEmailBody(msg.getContent().toString());
+
+        Object content = msg.getContent();
+
+        if (content instanceof MimeMultipart) {
+            MimeMultipart multipartMessage = (MimeMultipart)content;
+            int count = multipartMessage.getCount();
+            for (int i = 0; i < count; i++) {
+                BodyPart part = multipartMessage.getBodyPart(i);
+                if (part.getContentType().toLowerCase().startsWith("text/plain")) {
+                    result.setEmailBody(part.getContent().toString());
+                    break;
+                }
+            }
+        } else {
+            result.setEmailBody(content.toString());
+        }
 
         return result;
     }

@@ -6,6 +6,7 @@ package net.sitina.sync;
 import junit.framework.TestCase;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,7 +31,7 @@ public class ImapProviderTest extends TestCase {
 
         List<ImapSyncFile> files = provider.getFiles();
         assertNotNull(files);
-        assertEquals(1, files.size());
+        // assertEquals(1, files.size()); this depends on the state of server
     }
 
     public void testGetSingleMessage() throws Exception {
@@ -38,6 +39,7 @@ public class ImapProviderTest extends TestCase {
         assertNotNull(provider);
 
         ImapSyncFile message = provider.getMessage("tmp.txt");
+
         assertNotNull(message);
         assertTrue(message.getName().endsWith("tmp.txt"));
     }

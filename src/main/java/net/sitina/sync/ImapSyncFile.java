@@ -25,7 +25,6 @@ public class ImapSyncFile extends File {
     }
 
     private Date imapUpdateTime;
-    private Date fileSystemUpdateTime;
     private String emailBody;
 
     public Date getImapUpdateTime() {
@@ -53,7 +52,7 @@ public class ImapSyncFile extends File {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(this));
 
-            String line = null;
+            String line;
             String ls = System.getProperty(LINE_SEPARATOR);
 
             while ((line = reader.readLine()) != null) {
